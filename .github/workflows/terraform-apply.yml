@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.7 # Updated to a recent version; adjust if needed
+          terraform_version: 1.13.0 # Updated to a recent version; adjust if needed
 
       - name: Terraform Init
         run: |
@@ -46,6 +46,7 @@ jobs:
         run: terraform show -no-color plan.tfplan > plan.txt
 
       - name: Approval Gate
+        timeout-minutes: 7
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
