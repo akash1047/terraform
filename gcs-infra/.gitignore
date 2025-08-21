@@ -1,0 +1,31 @@
+# Local .terraform directories (created during init)
+**/.terraform/*
+
+# .tfstate files and backups (state should be remote in GCS)
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude all .tfvars files (sensitive vars like passwords, keys)
+*.tfvars
+*.tfvars.json
+
+# Ignore override files (local overrides not for Git)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore Terraform CLI config files
+.terraformrc
+terraform.rc
+
+# Service account keys and JSON files (your existing entries)
+*sa.json
+*.json
+
+# Optional: Backend config file if using one (e.g., backend.hcl with bucket details)
+backend.hcl
