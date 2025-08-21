@@ -48,7 +48,6 @@ jobs:
           script: |
             const path = require('path');
             process.chdir(path.join(process.env.GITHUB_WORKSPACE, 'gcs-infra'));
-            const { exec } = require('@actions/exec');
             const output = await exec.getExecOutput('terraform', ['show', '-no-color', 'plan.tfplan']);
             github.rest.issues.createComment({
               issue_number: context.issue.number,
