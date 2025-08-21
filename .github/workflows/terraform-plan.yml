@@ -7,6 +7,10 @@ on:
     paths:
       - "gcs-infra/**" # Trigger only on changes in your dir
 
+permissions:
+  issues: write # Required for creating comments on issues/PRs
+  pull-requests: write # Explicit for PR operations
+
 jobs:
   plan:
     environment: prod
