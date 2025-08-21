@@ -13,8 +13,8 @@ permissions:
   issues: write # For approval issue
 
 jobs:
-  environment: prod
   apply:
+    environment: prod
     runs-on: ubuntu-latest
     defaults:
       run:
