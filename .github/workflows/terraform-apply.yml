@@ -1,0 +1,55 @@
+name: Terraform Apply on Main
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "gcs-infra/**"
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+permissions:
+  contents: read
+  issues: write # For approval issue
+
+jobs:
+  apply:
+    environment: prod
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gcs-infra
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.0
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ vars.TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="prefix=${{ vars.TERRAFORM_STATE_PREFIX }}"
+
+      - name: Terraform Plan
+        run: terraform plan -var="project_id=${{ vars.PROJECT_ID }}" -out=plan.tfplan
+
+      - name: Approval Gate
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ vars.TERRAFORM_APPROVERS }}
+          minimum-approvals: 1
+          issue-title: "Approve Terraform Apply"
+          issue-body: "Please review the Terraform plan above and approve if it's good to apply."
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve plan.tfplan
