@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "gcs-infra/**" # Trigger only on changes in your dir
+    # paths:
+    #   - "gcs-infra/**"
 
 permissions:
   issues: write # Required for creating comments on issues/PRs
