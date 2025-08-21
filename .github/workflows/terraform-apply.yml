@@ -6,11 +6,11 @@ on:
       - main
     paths:
       - "gcs-infra/**"
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write # For approval issue
+  issues: write # For creating/ commenting on issues
 
 jobs:
   apply:
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.13.0
+          terraform_version: 1.5.7 # Updated to a recent version; adjust if needed
 
       - name: Terraform Init
         run: |
@@ -42,6 +42,9 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -var="project_id=${{ vars.PROJECT_ID }}" -out=plan.tfplan
 
+      - name: Generate Readable Plan File
+        run: terraform show -no-color plan.tfplan > plan.txt
+
       - name: Approval Gate
         uses: trstringer/manual-approval@v1
         with:
@@ -49,7 +52,13 @@ jobs:
           approvers: ${{ vars.TERRAFORM_APPROVERS }}
           minimum-approvals: 1
           issue-title: "Approve Terraform Apply"
-          issue-body: "Please review the Terraform plan above and approve if it's good to apply."
+          issue-body: "Please review the Terraform plan details posted as a comment below. This includes infra changes like resources to add/change/destroy. Approve with '/approve' if ready."
+          issue-body-file-path: plan.txt # Posts the plan output as a comment on the issue
 
       - name: Terraform Apply
         run: terraform apply -auto-approve plan.tfplan
+
+      # Optional: Cleanup temp files
+      - name: Cleanup
+        if: always()
+        run: rm -f plan.tfplan plan.txt
