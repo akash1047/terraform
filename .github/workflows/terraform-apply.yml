@@ -43,7 +43,7 @@ jobs:
         run: terraform plan -var="project_id=${{ vars.PROJECT_ID }}" -out=plan.tfplan
 
       - name: Generate Readable Plan File
-        run: terraform show -no-color plan.tfplan > plan.txt
+        run: terraform show -no-color plan.tfplan > ../plan.txt
 
       - name: Approval Gate
         timeout-minutes: 7
@@ -62,4 +62,4 @@ jobs:
       # Optional: Cleanup temp files
       - name: Cleanup
         if: always()
-        run: rm -f plan.tfplan plan.txt
+        run: rm -f plan.tfplan && rm -f ../plan.txt
