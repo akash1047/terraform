@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - "gcs-infra/**"
+    paths:
+      - "gcs-infra/**"
   workflow_dispatch:
 
 permissions:
@@ -35,11 +35,23 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform init \
+          terraform init -lockfile=readonly \
             -backend-config="bucket=${{ vars.TERRAFORM_STATE_BUCKET }}" \
             -backend-config="prefix=${{ vars.TERRAFORM_STATE_PREFIX }}"
 
       - name: Terraform Plan
+        env:
+          TF_VAR_project_id: ${{ vars.PROJECT_ID }}
+          TF_VAR_region: ${{ vars.REGION }}
+          TF_VAR_zone: ${{ vars.ZONE }}
+          TF_VAR_vpc_network_name: ${{ vars.VPC_NETWORK_NAME }}
+          TF_VAR_vpc_subnetwork_name: ${{ vars.VPC_SUBNETWORK_NAME }}
+          TF_VAR_vpc_subnetwork_cidr: ${{ vars.VPC_SUBNETWORK_CIDR }}
+          TF_VAR_allowed_ip_ranges: ${{ vars.ALLOWED_IP_RANGES }}
+          TF_VAR_vm_instance_name: ${{ vars.VM_INSTANCE_NAME }}
+          TF_VAR_vm_machine_type: ${{ vars.VM_MACHINE_TYPE }}
+          TF_VAR_vm_image: ${{ vars.VM_IMAGE }}
+          TF_VAR_tags: ${{ vars.TAGS }}
         run: terraform plan -var="project_id=${{ vars.PROJECT_ID }}" -out=plan.tfplan
 
       - name: Generate Readable Plan File
@@ -57,6 +69,18 @@ jobs:
           issue-body-file-path: plan.txt # Posts the plan output as a comment on the issue
 
       - name: Terraform Apply
+        env:
+          TF_VAR_project_id: ${{ vars.PROJECT_ID }}
+          TF_VAR_region: ${{ vars.REGION }}
+          TF_VAR_zone: ${{ vars.ZONE }}
+          TF_VAR_vpc_network_name: ${{ vars.VPC_NETWORK_NAME }}
+          TF_VAR_vpc_subnetwork_name: ${{ vars.VPC_SUBNETWORK_NAME }}
+          TF_VAR_vpc_subnetwork_cidr: ${{ vars.VPC_SUBNETWORK_CIDR }}
+          TF_VAR_allowed_ip_ranges: ${{ vars.ALLOWED_IP_RANGES }}
+          TF_VAR_vm_instance_name: ${{ vars.VM_INSTANCE_NAME }}
+          TF_VAR_vm_machine_type: ${{ vars.VM_MACHINE_TYPE }}
+          TF_VAR_vm_image: ${{ vars.VM_IMAGE }}
+          TF_VAR_tags: ${{ vars.TAGS }}
         run: terraform apply -auto-approve plan.tfplan
 
       # Optional: Cleanup temp files
