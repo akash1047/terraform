@@ -36,7 +36,6 @@ variable "vpc_subnetwork_cidr" {
 variable "allowed_ip_ranges" {
   description = "List of allowed IP ranges for firewall rules"
   type        = list(string)
-  default     = []
 }
 
 variable "vm_instance_name" {
