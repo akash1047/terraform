@@ -58,6 +58,7 @@ jobs:
           issue-title: "Approve Terraform Apply"
           issue-body: "Please review the Terraform plan details posted as a comment below. This includes infra changes like resources to add/change/destroy. Approve with '/approve' if ready."
           issue-body-file-path: plan.txt # Posts the plan output as a comment on the issue
+          additional-approved-words: "yeah"
 
       - name: Terraform Apply
         env:

@@ -35,6 +35,8 @@ resource "google_compute_instance" "vm_instance" {
     }
   }
 
+  metadata_startup_script = file("setup.sh")
+
   network_interface {
     network    = google_compute_network.vpc_network.id
     subnetwork = google_compute_subnetwork.vpc_subnetwork.id
